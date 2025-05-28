@@ -41,6 +41,18 @@ class HoverGame {
 
         // Block right-click context menu
         document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Add cheat command for level 20
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'l' && this.isGameRunning) {
+                this.level = 20;
+                this.score = this.level * 10; // Set score to match level
+                this.targets = []; // Clear existing targets
+                this.createNewTarget(); // Create new target for level 20
+                this.updateUI();
+                console.log('Jumped to level 20!');
+            }
+        });
     }
 
     loadSprites() {
@@ -241,25 +253,25 @@ class HoverGame {
         const spriteName = spriteNames[Math.floor(Math.random() * spriteNames.length)];
         const sprite = this.sprites[spriteName];
         
-        const baseSize = 120; // Increased from 80 to 120 for better visibility
-        // Only decrease size up to level 18, but with a smaller reduction factor
+        const baseSize = 120;
+        // Calculate size with a minimum limit of 60 pixels
         const size = this.gameMode === 'challenge' 
-            ? baseSize * (1 - Math.min(this.level - 1, 17) * 0.03) // Reduced reduction factor from 0.05 to 0.03
+            ? Math.max(60, baseSize * (1 - (this.level - 1) * 0.03))
             : baseSize;
             
-        // Calculate safe area for sprite placement
         const safeX = this.safeZones.left;
         const safeY = this.safeZones.top;
         const safeWidth = this.canvas.width - this.safeZones.left - this.safeZones.right;
         const safeHeight = this.canvas.height - this.safeZones.top - this.safeZones.bottom;
         
-        // Place sprite within safe area
         const x = safeX + Math.random() * (safeWidth - size);
         const y = safeY + Math.random() * (safeHeight - size);
         
-        // Add movement properties for levels 18 and above
-        const speed = this.level >= 18 ? Math.min(3 + (this.level - 18) * 0.15, 6) : 0; // Increased base speed and adjusted scaling
-        const angle = Math.random() * Math.PI * 2; // Random initial direction
+        // Dramatically increased speeds
+        const baseSpeed = 8; // Much higher base speed
+        const speed = this.level >= 18 ? Math.min(20, baseSpeed + (this.level - 18) * 0.5) : 0; // Much higher max speed and scaling
+        
+        const angle = Math.random() * Math.PI * 2;
         
         this.targets.push({
             x,
@@ -271,7 +283,9 @@ class HoverGame {
             speed,
             angle,
             dx: Math.cos(angle) * speed,
-            dy: Math.sin(angle) * speed
+            dy: Math.sin(angle) * speed,
+            lastDirectionChange: 0,
+            directionChangeInterval: 500 + Math.random() * 500 // Much faster direction changes
         });
     }
 
@@ -305,6 +319,8 @@ class HoverGame {
                     if (this.gameMode === 'challenge') {
                         if (this.score >= this.level * 10) {
                             this.level++;
+                            // Clear all targets when leveling up to ensure proper number of sprites
+                            this.targets = [];
                         }
                     }
                     
@@ -325,19 +341,40 @@ class HoverGame {
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
+        const currentTime = Date.now();
+        
         this.targets.forEach(target => {
             if (!target.hovered) {
-                // Update position for moving sprites
                 if (target.speed > 0) {
+                    // Random direction changes
+                    if (currentTime - target.lastDirectionChange > target.directionChangeInterval) {
+                        const newAngle = Math.random() * Math.PI * 2;
+                        target.dx = Math.cos(newAngle) * target.speed;
+                        target.dy = Math.sin(newAngle) * target.speed;
+                        target.lastDirectionChange = currentTime;
+                        target.directionChangeInterval = 500 + Math.random() * 500;
+                    }
+                    
                     target.x += target.dx;
                     target.y += target.dy;
                     
-                    // Bounce off walls
+                    // Bounce off walls with slight randomization
+                    const bounceRandomization = 1.5;
                     if (target.x <= this.safeZones.left || target.x + target.size >= this.canvas.width - this.safeZones.right) {
                         target.dx *= -1;
+                        target.dy += (Math.random() - 0.5) * bounceRandomization;
                     }
                     if (target.y <= this.safeZones.top || target.y + target.size >= this.canvas.height - this.safeZones.bottom) {
                         target.dy *= -1;
+                        target.dx += (Math.random() - 0.5) * bounceRandomization;
+                    }
+                    
+                    // Keep speed consistent
+                    const currentSpeed = Math.sqrt(target.dx * target.dx + target.dy * target.dy);
+                    if (currentSpeed !== target.speed) {
+                        const ratio = target.speed / currentSpeed;
+                        target.dx *= ratio;
+                        target.dy *= ratio;
                     }
                 }
                 
