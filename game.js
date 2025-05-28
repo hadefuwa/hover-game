@@ -24,12 +24,23 @@ class HoverGame {
         this.gameContainer = document.getElementById('game');
         this.highScoresMenu = document.getElementById('highScoresMenu');
         
+        // Define safe zones
+        this.safeZones = {
+            top: 100, // Height of the top UI bar
+            bottom: 20,
+            left: 20,
+            right: 20
+        };
+        
         // Setup event listeners immediately
         this.setupEventListeners();
         this.setupMenu();
         
         // Load sprites
         this.loadSprites();
+
+        // Block right-click context menu
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     loadSprites() {
@@ -121,6 +132,36 @@ class HoverGame {
                 this.showMenu();
             });
         }
+
+        // Fullscreen button
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', () => {
+                this.toggleFullscreen();
+            });
+        }
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            // Enter fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            }
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
     }
 
     showMenu() {
@@ -129,6 +170,11 @@ class HoverGame {
         if (this.gameContainer) this.gameContainer.style.display = 'none';
         if (this.highScoresMenu) this.highScoresMenu.style.display = 'none';
         this.isGameRunning = false;
+
+        // Exit fullscreen when returning to menu
+        if (document.fullscreenElement) {
+            this.toggleFullscreen();
+        }
     }
 
     showHighScores() {
@@ -167,6 +213,9 @@ class HoverGame {
         if (this.gameContainer) this.gameContainer.style.display = 'block';
         if (this.highScoresMenu) this.highScoresMenu.style.display = 'none';
         
+        // Enter fullscreen when game starts
+        this.toggleFullscreen();
+        
         this.resizeCanvas();
         this.isGameRunning = true;
         this.updateUI();
@@ -177,6 +226,14 @@ class HoverGame {
     resizeCanvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        
+        // Update safe zones based on screen size
+        this.safeZones = {
+            top: Math.min(100, window.innerHeight * 0.15), // 15% of screen height or 100px, whichever is smaller
+            bottom: 20,
+            left: 20,
+            right: 20
+        };
     }
 
     createNewTarget() {
@@ -189,8 +246,15 @@ class HoverGame {
             ? baseSize * (1 - (this.level - 1) * 0.05) // Decrease size with level
             : baseSize;
             
-        const x = Math.random() * (this.canvas.width - size);
-        const y = Math.random() * (this.canvas.height - size);
+        // Calculate safe area for sprite placement
+        const safeX = this.safeZones.left;
+        const safeY = this.safeZones.top;
+        const safeWidth = this.canvas.width - this.safeZones.left - this.safeZones.right;
+        const safeHeight = this.canvas.height - this.safeZones.top - this.safeZones.bottom;
+        
+        // Place sprite within safe area
+        const x = safeX + Math.random() * (safeWidth - size);
+        const y = safeY + Math.random() * (safeHeight - size);
         
         this.targets.push({
             x,

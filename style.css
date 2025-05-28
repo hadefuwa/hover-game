@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 * {
     margin: 0;
     padding: 0;
@@ -10,6 +9,10 @@ body {
     background-color: #f0f0f0;
     font-family: 'Comic Sans MS', cursive, sans-serif;
     background: linear-gradient(135deg, #ffd1dc, #e6e6fa);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .menu {
@@ -37,9 +40,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    margin-bottom: 30px;
 }
 
-.menu-buttons button, .back-button {
+.menu-buttons button, .back-button, .fullscreen-button {
     padding: 15px 30px;
     font-size: 24px;
     border: none;
@@ -51,9 +55,18 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.menu-buttons button:hover, .back-button:hover {
+.menu-buttons button:hover, .back-button:hover, .fullscreen-button:hover {
     transform: scale(1.05);
     background-color: #ff1493;
+}
+
+.fullscreen-button {
+    background-color: #4ECDC4;
+    margin-top: 20px;
+}
+
+.fullscreen-button:hover {
+    background-color: #45B7D1;
 }
 
 .game-container {
@@ -71,13 +84,18 @@ body {
     cursor: pointer;
 }
 
+/* Create a safe zone for UI elements */
 .game-info {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
     display: flex;
     gap: 20px;
     z-index: 100;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+    pointer-events: none; /* Allow clicking through the background */
 }
 
 .score, .level, .timer {
@@ -87,6 +105,7 @@ body {
     font-size: 24px;
     color: #333;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    pointer-events: auto; /* Re-enable clicking for the buttons */
 }
 
 .back-button {
@@ -94,6 +113,7 @@ body {
     top: 20px;
     right: 20px;
     z-index: 100;
+    pointer-events: auto;
 }
 
 .high-scores {
@@ -135,142 +155,21 @@ body {
 
 .score-entry:last-child {
     border-bottom: none;
-=======
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
 }
 
-body {
-    overflow: hidden;
-    background-color: #f0f0f0;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    background: linear-gradient(135deg, #ffd1dc, #e6e6fa);
+/* Fullscreen styles */
+:fullscreen {
+    background: #f0f0f0;
 }
 
-.menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #ffd1dc, #e6e6fa);
-    z-index: 1000;
+:-webkit-full-screen {
+    background: #f0f0f0;
 }
 
-.menu h1 {
-    color: #ff69b4;
-    font-size: 48px;
-    margin-bottom: 40px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+:-moz-full-screen {
+    background: #f0f0f0;
 }
 
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.menu-buttons button, .back-button {
-    padding: 15px 30px;
-    font-size: 24px;
-    border: none;
-    border-radius: 25px;
-    background-color: #ff69b4;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.2s, background-color 0.2s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.menu-buttons button:hover, .back-button:hover {
-    transform: scale(1.05);
-    background-color: #ff1493;
-}
-
-.game-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-}
-
-#gameCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.game-info {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    gap: 20px;
-    z-index: 100;
-}
-
-.score, .level, .timer {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 24px;
-    color: #333;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.back-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
-}
-
-.high-scores {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #ffd1dc, #e6e6fa);
-    z-index: 1000;
-}
-
-.high-scores h2 {
-    color: #ff69b4;
-    font-size: 36px;
-    margin-bottom: 30px;
-}
-
-#scoresList {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 15px;
-    min-width: 300px;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.score-entry {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border-bottom: 1px solid #ffd1dc;
-    font-size: 20px;
-}
-
-.score-entry:last-child {
-    border-bottom: none;
->>>>>>> e851b31380b2884ca6e958be7bfe17a56dcd1981
+:-ms-fullscreen {
+    background: #f0f0f0;
 } 
