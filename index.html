@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,4 +35,42 @@
 
     <script src="game.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hover Game for Kids</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="menu" class="menu">
+        <h1>Hover Adventure</h1>
+        <div class="menu-buttons">
+            <button id="practiceMode">Practice Mode</button>
+            <button id="challengeMode">Challenge Mode</button>
+            <button id="highScores">High Scores</button>
+        </div>
+    </div>
+
+    <div id="game" class="game-container" style="display: none;">
+        <canvas id="gameCanvas"></canvas>
+        <div class="game-info">
+            <div class="score">Score: <span id="scoreValue">0</span></div>
+            <div class="level">Level: <span id="levelValue">1</span></div>
+            <div class="timer" id="timer"></div>
+        </div>
+        <button id="backToMenu" class="back-button">Back to Menu</button>
+    </div>
+
+    <div id="highScoresMenu" class="high-scores" style="display: none;">
+        <h2>High Scores</h2>
+        <div id="scoresList"></div>
+        <button id="backFromScores" class="back-button">Back to Menu</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+>>>>>>> e851b31380b2884ca6e958be7bfe17a56dcd1981
 </html> 
