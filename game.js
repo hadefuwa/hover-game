@@ -241,10 +241,10 @@ class HoverGame {
         const spriteName = spriteNames[Math.floor(Math.random() * spriteNames.length)];
         const sprite = this.sprites[spriteName];
         
-        const baseSize = 80;
-        // Only decrease size up to level 18
+        const baseSize = 120; // Increased from 80 to 120 for better visibility
+        // Only decrease size up to level 18, but with a smaller reduction factor
         const size = this.gameMode === 'challenge' 
-            ? baseSize * (1 - Math.min(this.level - 1, 17) * 0.05) // Cap size reduction at level 18
+            ? baseSize * (1 - Math.min(this.level - 1, 17) * 0.03) // Reduced reduction factor from 0.05 to 0.03
             : baseSize;
             
         // Calculate safe area for sprite placement
@@ -258,7 +258,7 @@ class HoverGame {
         const y = safeY + Math.random() * (safeHeight - size);
         
         // Add movement properties for levels 18 and above
-        const speed = this.level >= 18 ? Math.min(2 + (this.level - 18) * 0.2, 5) : 0; // Increase speed with level, max 5
+        const speed = this.level >= 18 ? Math.min(3 + (this.level - 18) * 0.15, 6) : 0; // Increased base speed and adjusted scaling
         const angle = Math.random() * Math.PI * 2; // Random initial direction
         
         this.targets.push({
