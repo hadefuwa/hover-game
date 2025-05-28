@@ -242,8 +242,9 @@ class HoverGame {
         const sprite = this.sprites[spriteName];
         
         const baseSize = 80;
+        // Only decrease size up to level 18
         const size = this.gameMode === 'challenge' 
-            ? baseSize * (1 - (this.level - 1) * 0.05) // Decrease size with level
+            ? baseSize * (1 - Math.min(this.level - 1, 17) * 0.05) // Cap size reduction at level 18
             : baseSize;
             
         // Calculate safe area for sprite placement
@@ -256,13 +257,21 @@ class HoverGame {
         const x = safeX + Math.random() * (safeWidth - size);
         const y = safeY + Math.random() * (safeHeight - size);
         
+        // Add movement properties for levels 18 and above
+        const speed = this.level >= 18 ? Math.min(2 + (this.level - 18) * 0.2, 5) : 0; // Increase speed with level, max 5
+        const angle = Math.random() * Math.PI * 2; // Random initial direction
+        
         this.targets.push({
             x,
             y,
             size,
             sprite: spriteName,
             points: sprite.points,
-            hovered: false
+            hovered: false,
+            speed,
+            angle,
+            dx: Math.cos(angle) * speed,
+            dy: Math.sin(angle) * speed
         });
     }
 
@@ -318,6 +327,20 @@ class HoverGame {
         
         this.targets.forEach(target => {
             if (!target.hovered) {
+                // Update position for moving sprites
+                if (target.speed > 0) {
+                    target.x += target.dx;
+                    target.y += target.dy;
+                    
+                    // Bounce off walls
+                    if (target.x <= this.safeZones.left || target.x + target.size >= this.canvas.width - this.safeZones.right) {
+                        target.dx *= -1;
+                    }
+                    if (target.y <= this.safeZones.top || target.y + target.size >= this.canvas.height - this.safeZones.bottom) {
+                        target.dy *= -1;
+                    }
+                }
+                
                 this.drawSprite(target);
             }
         });
